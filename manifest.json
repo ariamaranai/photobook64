@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "photobook64",
+  "version": "0",
+  "description": "Bookmark images as Base64",
+  "icons": {
+    "128": "128.png"
+  },
+  "permissions": [
+    "bookmarks",
+    "contextMenus",
+    "userScripts"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "bg.js"
+  },
+  "action": {
+    "default_popup": "photobook64.htm"
+  }
+}
