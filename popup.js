@@ -1,10 +1,9 @@
 chrome.runtime.onMessage.addListener(srcUrl =>
-  chrome.bookmarks.getChildren("2", async treeNode => {
+  chrome.bookmarks.getChildren("2", async otherBookmarks => {
     t.placeholder = t.value = srcUrl;
     t.select();
 
-    let rootId =
-      (treeNode.findLast(v => v.title == "photobook64") ||
+    let rootId = (otherBookmarks.findLast(v => v.title == "photobook64") ||
       await chrome.bookmarks.create({
         title: "photobook64"
       })).id;
@@ -43,7 +42,7 @@ chrome.runtime.onMessage.addListener(srcUrl =>
     (onselect = () =>
       chrome.bookmarks.getChildren(parentId = ids[f.selectedIndex], treeNode => (
         b.textContent = (oldItem = treeNode.find(v => v.url == dataUrl)) ? "Remove" : "Done",
-        b.setAttribute("style", oldItem  ? "filter:hue-rotate(130deg)" : "")
+        b.setAttribute("style", oldItem  ? "background:#923" : "")
       ))
     )();
 
