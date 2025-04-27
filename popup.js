@@ -3,14 +3,26 @@ chrome.runtime.onMessage.addListener(srcUrl =>
     t.placeholder = t.value = srcUrl;
     t.select();
 
-    let rootId = (treeNode.findLast(v => v.title == "photobook64") || await chrome.bookmarks.create({ title: "photobook64" })).id;
+    let rootId =
+      (treeNode.findLast(v => v.title == "photobook64") ||
+      await chrome.bookmarks.create({
+        title: "photobook64"
+      })).id;
     let folders = (await chrome.bookmarks.getChildren(rootId)).filter(v => "url" in v == 0);
     let ids = [];
 
     f.innerHTML =
       folders.length
-        ? folders.reduce((a, v) => (ids.push(v.id), a + "<option>📁 " + v.title), "")
-        : (chrome.bookmarks.create({ parentId: rootId, title: "images" }), "<option>📁 images");
+        ? folders
+          .sort((a, b) => (b.dataAdded < a.dataAdded || -1))
+            .reduce((a, v) => (ids.push(v.id), a + "<option>📁 " + v.title), "")
+        : (
+            chrome.bookmarks.create({
+              parentId: rootId,
+              title: "images"
+            }),
+            "<option>📁 images"
+          );
     
     let dataUrl =
       srcUrl[0] != "d"
@@ -38,6 +50,10 @@ chrome.runtime.onMessage.addListener(srcUrl =>
     b.onclick = () =>
       oldItem
         ? chrome.bookmarks.remove({ id: oldItem.id }, close)
-        : chrome.bookmarks.create({ parentId, title: t.value || srcUrl, url: dataUrl }, close);
+        : chrome.bookmarks.create({
+            parentId,
+            title: t.value || srcUrl,
+            url: dataUrl
+          }, close);
   })
 );
