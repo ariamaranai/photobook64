@@ -7,48 +7,47 @@ chrome.runtime.onMessage.addListener(srcUrl =>
       await chrome.bookmarks.create({
         title: "photobook64"
       })).id;
-    let folders = (await chrome.bookmarks.getChildren(rootId)).filter(v => "url" in v == 0);
-    let ids = [];
-
-    f.innerHTML =
-      folders.length
-        ? folders
-          .sort((a, b) => (b.dataAdded < a.dataAdded || -1))
-            .reduce((a, v) => (ids.push(v.id), a + "<option>📁 " + v.title), "")
-        : (
-            chrome.bookmarks.create({
-              parentId: rootId,
-              title: "images"
-            }),
-            "<option>📁 images"
+    let folderIds = [];
+    let selectHTML = "";
+    let latestUsedTime = 0;
+    let latestUsedIndex = 0;
+    let traverse = async (id, count) => {
+      let nodes = await chrome.bookmarks.getChildren(id);
+      let i = 0;
+      while (i < nodes.length) {
+        let node = nodes[i];
+        if (node.url == null) {
+          let { dateGroupModified, id, title } = node;
+          selectHTML +=  "<option>" + " ".repeat(count) + "📂" + title;
+          latestUsedTime < dateGroupModified && (
+            latestUsedTime = dateGroupModified,
+            latestUsedIndex = folderIds.push(id)
           );
+          await traverse(id, count + 1);
+        }
+        ++i;
+      }
+    }
+    await traverse(rootId, 0);
+    folderIds.push(rootId);
+    f.innerHTML = selectHTML + "<option>📁photobook64";
+    f.children[latestUsedIndex].selected = 1;
     
-    let dataUrl =
-      srcUrl[0] != "d"
-        ? (await new Promise(resolve =>
-            fetch (srcUrl)
-              .then(r => r.blob())
-                .then(r => {
-                  let reader = new FileReader;
-                  reader.onload = resolve;
-                  reader.readAsDataURL(r);
-                })
-          )).target.result
-        : srcUrl;
+    let reader = new FileReader;
+    reader.readAsDataURL(await (await fetch(srcUrl)).blob());
+    let dataUrl = (await new Promise(resolve => (reader.onload = resolve))).target.result;
 
-    let parentId = ids[f.selectedIndex];
-    let oldItem;
-
+    let parentId;
+    let node;
     (onselect = () =>
-      chrome.bookmarks.getChildren(parentId = ids[f.selectedIndex], treeNode => (
-        b.textContent = (oldItem = treeNode.find(v => v.url == dataUrl)) ? "Remove" : "Done",
-        b.setAttribute("style", oldItem  ? "background:#923" : "")
-      ))
+      chrome.bookmarks.getChildren(parentId = folderIds[f.selectedIndex], nodes => {
+        b.textContent = (node = nodes.find(v => v.url == dataUrl)) ? "Remove" : "Done",
+        b.setAttribute("style", node ? "background:#923" : "")
+      })
     )();
-
     b.onclick = () =>
-      oldItem
-        ? chrome.bookmarks.remove({ id: oldItem.id }, close)
+      node
+        ? chrome.bookmarks.remove({ id: node.id }, close)
         : chrome.bookmarks.create({
             parentId,
             title: t.value || srcUrl,
