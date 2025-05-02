@@ -5,10 +5,15 @@ chrome.action.onClicked.addListener(tab =>
 );
 {
   let id;
-  chrome.runtime.onMessage.addListener(title => id && chrome.bookmarks.update(id, { title }));
+  let title;
+  chrome.runtime.onMessage.addListener(m =>
+    id && chrome.bookmarks.update(id, {
+      title: m + " | " + title
+    })
+  );
   chrome.contextMenus.onClicked.addListener(({ srcUrl }) => (
     chrome.action.setPopup({ popup: "popup.htm" }),
-    chrome.action.openPopup(() => chrome.runtime.sendMessage(srcUrl)),
+    chrome.action.openPopup(),
     chrome.action.setPopup({ popup: "" }),
     chrome.bookmarks.getChildren("2", async otherBookmarks => {
       let reader = new FileReader;
@@ -18,7 +23,7 @@ chrome.action.onClicked.addListener(tab =>
       let nodes = await chrome.bookmarks.getChildren(parentId);
       let node = nodes.find(v => v.url == url);
       node && chrome.bookmarks.remove(node.id);
-      id = (await chrome.bookmarks.create({ parentId, title: srcUrl, url })).id
+      id = (await chrome.bookmarks.create({ parentId, title: title = srcUrl, url })).id
     })
   ));
 }
@@ -27,6 +32,6 @@ chrome.runtime.onInstalled.addListener(() =>
     id: "",
     title: "Bookmark image",
     contexts: ["image"],
-    documentUrlPatterns: ["https://*/*", "file://*"]
+    documentUrlPatterns: ["https://*/*", "http://*/*", "file://*"]
   })
 );

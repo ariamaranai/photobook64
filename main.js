@@ -1,15 +1,20 @@
 chrome.bookmarks.getChildren("2", otherBookmarks => {
-  let rootId = otherBookmarks.findLast(v => v.title == "photobook64");
-  if (!rootId) return;
-  chrome.bookmarks.getChildren(rootId.id, nodes => {
+  let root = otherBookmarks.findLast(v => v.title == "photobook64");
+  root && chrome.bookmarks.getChildren(root.id, nodes => {
     let i = 0;
     while (i < nodes.length) {
-      let node = nodes[i];
-      let { url } = node;
+      let { url, title } = nodes[i];
       if (url && url[0] == "d") {
         let img = new Image;
         img.src = url;
-        document.body.appendChild(img);
+        if (URL.canParse(title))
+          document.body.append(img, title)
+        else {
+          let p = document.createElement("p");
+          let index = title.lastIndexOf(" | ");
+          p.textContent =  title.slice(0, index);
+          document.body.append(p, img, title.slice(index + 3));
+        }
       }
       ++i;
     }
