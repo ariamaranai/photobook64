@@ -1,5 +1,4 @@
-chrome.runtime.onMessage.addListener(m => {
-  let input = document.body.lastChild;
-  input.select(input.value = m);
-  onkeyup = e => e.keyCode == 13 && close((e = input.value) != m && chrome.runtime.sendMessage(e))
-});
+chrome.runtime.onMessage.addListener(m => (
+  p.select(p.value = m),
+  onkeyup = e => e.keyCode == 13 && close((e = p.value) != m && chrome.runtime.sendMessage(e))
+));
