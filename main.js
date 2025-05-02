@@ -1,17 +1,17 @@
 chrome.bookmarks.getChildren("2", otherBookmarks => {
-  let root = otherBookmarks.findLast(v => v.title == "photobook64");
-  if (!root) return;
-  chrome.bookmarks.getChildren(root.id, async treeNode => {
-    let folders = treeNode.filter(v => "url" in v == 0);
-    let d = document;
-    let folderContainer = d.body.firstChild;
-    let imageContainer = folderContainer.nextSibling;
+  let rootId = otherBookmarks.findLast(v => v.title == "photobook64");
+  if (!rootId) return;
+  chrome.bookmarks.getChildren(rootId.id, nodes => {
     let i = 0;
-
-    while (i < folders.length) {
-      let folder = folders[i];
-      folderContainer.appendChild(d.createElement("dt")).folderElement.textContent = "📁 " + folder.title;
+    while (i < nodes.length) {
+      let node = nodes[i];
+      let { url } = node;
+      if (url && url[0] == "d") {
+        let img = new Image;
+        img.src = url;
+        document.body.appendChild(img);
+      }
       ++i;
     }
   });
-})
+});
