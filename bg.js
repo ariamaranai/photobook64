@@ -1,13 +1,11 @@
 chrome.action.onClicked.addListener(tab =>
-  chrome.tabs.create({
-    url: "photobook64.htm",
-    index: tab.index + 1
-  })
+  tab.url != "chrome://newtab/"
+    ? chrome.tabs.create({ url: "photobook64.htm", index: tab.index + 1 })
+    : chrome.tabs.update({ url: "photobook64.htm" })
 );
 {
   let id;
   chrome.runtime.onMessage.addListener(title => id && chrome.bookmarks.update(id, { title }));
-  
   chrome.contextMenus.onClicked.addListener(({ srcUrl }) => (
     chrome.action.setPopup({ popup: "popup.htm" }),
     chrome.action.openPopup(() => chrome.runtime.sendMessage(srcUrl)),
