@@ -3,10 +3,7 @@ chrome.runtime.onMessage.addListener(srcUrl =>
     t.placeholder = t.value = srcUrl;
     t.select();
 
-    let rootId = (otherBookmarks.findLast(v => v.title == "photobook64") ||
-      await chrome.bookmarks.create({
-        title: "photobook64"
-      })).id;
+    let rootId = (otherBookmarks.findLast(v => v.title == "photobook64") || await chrome.bookmarks.create({ title: "photobook64" })).id;
     let folderIds = [];
     let selectHTML = "";
     let latestUsedTime = 0;
@@ -45,13 +42,8 @@ chrome.runtime.onMessage.addListener(srcUrl =>
         b.setAttribute("style", node ? "background:#923" : "")
       })
     )();
-    b.onclick = () =>
-      node
-        ? chrome.bookmarks.remove({ id: node.id }, close)
-        : chrome.bookmarks.create({
-            parentId,
-            title: t.value || srcUrl,
-            url: dataUrl
-          }, close);
+    b.onclick = () => node
+      ? chrome.bookmarks.remove(node.id, close)
+      : chrome.bookmarks.create({ parentId, title: t.value || srcUrl, url: dataUrl }, close);
   })
 );
