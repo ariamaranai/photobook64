@@ -3,8 +3,8 @@ chrome.action.onClicked.addListener(tab =>
     url: "photobook64.htm",
     index: tab.index + 1
   })
-)
-chrome.contextMenus.onClicked.addListener(info => (
+);
+chrome.contextMenus.onClicked.addListener((info, tab) => (
   chrome.action.setPopup({ popup: "popup.htm" }),
   chrome.action.openPopup(() =>
     chrome.runtime.sendMessage(info.srcUrl)
