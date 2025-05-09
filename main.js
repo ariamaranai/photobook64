@@ -18,7 +18,7 @@ chrome.bookmarks.getChildren("2", async otherBookmarks => {
     e.preventDefault();
     let items = e.dataTransfer?.files || e.clipboardData.items;
     let itemLen = items.length;
-    let filenames = Array(itemLen);
+    let arr = Array(itemLen);
     let i = 0;
     let j = 0;
     while (i < itemLen) {
@@ -36,12 +36,12 @@ chrome.bookmarks.getChildren("2", async otherBookmarks => {
               : !nodeIds.push((await chrome.bookmarks.create({
                   parentId: rootId,
                   url: (d.body.appendChild(i = new Image).src = e.target.result),
-                  title: i.title = filenames[j]
+                  title: i.title = arr[j]
                 })).id)
             ) ++i;
           ++j;
         }
-        filenames[j] = file.name;
+        arr[j] = file.name;
         fr.readAsDataURL(file);
         ++j;
       }
@@ -51,6 +51,14 @@ chrome.bookmarks.getChildren("2", async otherBookmarks => {
   }
   d.onpaste = ondrop = inputFile;
 
+  let bookmarkRemovedHandler = id => {
+    let index = nodeIds.indexOf(id);
+    index >= 0 &&
+    d.images[index].remove(nodeIds.splice(index, 1));
+  }
+  chrome.bookmarks.onRemoved.addListener(bookmarkRemovedHandler);
+  chrome.bookmarks.onMoved.addListener(bookmarkRemovedHandler);
+
   chrome.bookmarks.onChanged.addListener((id, changeInfo) => {
     let index = nodeIds.indexOf(id);
     if (index >= 0) {
@@ -58,11 +66,6 @@ chrome.bookmarks.getChildren("2", async otherBookmarks => {
       img.src = changeInfo.url;
       img.title = changeInfo.title;
     }
-  });
-  chrome.bookmarks.onMoved.addListener(id => {
-    let index = nodeIds.indexOf(id);
-    index >= 0 &&
-    d.images[index].remove(nodeIds.splice(index, 1));
   });
 });
 ondragover = e => e.preventDefault();
