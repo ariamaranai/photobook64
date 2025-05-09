@@ -32,7 +32,7 @@ chrome.bookmarks.getChildren("2", async otherBookmarks => {
           let i = 0;
           while (
             i < images.length
-              ? d.images[i].src != dataUrl
+              ? images[i].src != dataUrl
               : !nodeIds.push((await chrome.bookmarks.create({
                   parentId: rootId,
                   url: (d.body.appendChild(i = new Image).src = e.target.result),
@@ -53,8 +53,7 @@ chrome.bookmarks.getChildren("2", async otherBookmarks => {
 
   let bookmarkRemovedHandler = id => {
     let index = nodeIds.indexOf(id);
-    index >= 0 &&
-    d.images[index].remove(nodeIds.splice(index, 1));
+    index >= 0 && d.images[index].remove(nodeIds.splice(index, 1));
   }
   chrome.bookmarks.onRemoved.addListener(bookmarkRemovedHandler);
   chrome.bookmarks.onMoved.addListener(bookmarkRemovedHandler);
