@@ -32,8 +32,8 @@ chrome.bookmarks.getChildren("2", async otherBookmarks => {
               ? d.images[i].src != dataUrl
               : !nodeIds.push((await chrome.bookmarks.create({
                   parentId: rootId,
-                  url: (d.body.appendChild(i = new Image).src = e.target.result, (i = i.title = filenames[j])),
-                  title: i
+                  url: (d.body.appendChild(i = new Image).src = e.target.result),
+                  title: i.title = filenames[j]
                 })).id)
             ) ++i;
           ++j;
