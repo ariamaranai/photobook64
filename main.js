@@ -13,15 +13,18 @@ chrome.bookmarks.getChildren("2", async otherBookmarks => {
     nodeIds[i] = node.id;
     ++i;
   }
-  d.onpaste = e => {
-    let items = e.clipboardData.items;
-    let filenames = [];
+
+  let inputFile = e => {
+    e.preventDefault();
+    let items = e.dataTransfer?.files || e.clipboardData.items;
+    let itemLen = items.length;
+    let filenames = Array(itemLen);
     let i = 0;
     let j = 0;
-    while (i < items.length) {
+    while (i < itemLen) {
       let item = items[i];
       if (item.type[0] == "i") {
-        let file = item.getAsFile();
+        let file = item.kind ? item.getAsFile() : item;
         let fr = new FileReader;
         fr.onload = async e => {
           let dataUrl = e.target.result;
@@ -46,6 +49,8 @@ chrome.bookmarks.getChildren("2", async otherBookmarks => {
     }
     j = 0;
   }
+  d.onpaste = ondrop = inputFile;
+
   chrome.bookmarks.onChanged.addListener((id, changeInfo) => {
     let index = nodeIds.indexOf(id);
     if (index >= 0) {
@@ -60,3 +65,4 @@ chrome.bookmarks.getChildren("2", async otherBookmarks => {
     d.images[index].remove(nodeIds.splice(index, 1));
   });
 });
+ondragover = e => e.preventDefault();
