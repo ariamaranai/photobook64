@@ -21,8 +21,15 @@ chrome.action.onClicked.addListener(tab =>
       let url = (await new Promise(resolve => reader.onload = resolve)).target.result;
       let parentId = (otherBookmarks.findLast(v => v.title == "photobook64") || await chrome.bookmarks.create({ title: "photobook64" })).id;
       let nodes = await chrome.bookmarks.getChildren(parentId);
-      let node = nodes.find(v => v.url == url);
-      node && chrome.bookmarks.remove(node.id);
+      let i = 0;
+      while (i < nodes.length) {
+        let node = nodes[i];
+        if (node.url == url) {
+          chrome.bookmarks.remove(node.id);
+          break;
+        }
+        ++i;
+      }
       id = (await chrome.bookmarks.create({ parentId, title: title = srcUrl, url })).id
     })
   ));
