@@ -2,9 +2,9 @@ chrome.bookmarks.getChildren("2", async otherBookmarks => {
   let rootId = (otherBookmarks.findLast(v => v.title == "photobook64") || await chrome.bookmarks.create({ title: "photobook64" })).id;
   let nodes = await chrome.bookmarks.getChildren(rootId);
   let d = document;
-  let i = 0;
   let nodeLen = nodes.length;
   let nodeIds = Array(nodeLen);
+  let i = 0;
   while (i < nodeLen) {
     let node = nodes[i];
     let img = new Image;
@@ -13,14 +13,13 @@ chrome.bookmarks.getChildren("2", async otherBookmarks => {
     nodeIds[i] = node.id;
     ++i;
   }
-
   let inputFile = e => {
     e.preventDefault();
     let items = e.dataTransfer?.files || e.clipboardData.items;
     let itemLen = items.length;
     let arr = Array(itemLen);
-    let i = 0;
     let j = 0;
+    let i = 0;
     while (i < itemLen) {
       let item = items[i];
       if (item.type[0] == "i") {
