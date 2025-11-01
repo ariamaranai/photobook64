@@ -16,9 +16,9 @@ chrome.action.onClicked.addListener(tab =>
     chrome.action.openPopup(),
     chrome.action.setPopup({ popup: "" }),
     chrome.bookmarks.getChildren("2", async otherBookmarks => {
-      let reader = new FileReader;
-      reader.readAsDataURL(await (await fetch(srcUrl)).blob());
-      let url = (await new Promise(resolve => reader.onload = resolve)).target.result;
+      let fr = new FileReader;
+      fr.readAsDataURL(await (await fetch(srcUrl)).blob());
+      let url = (await new Promise(resolve => fr.onload = resolve)).target.result;
       let parentId = (otherBookmarks.findLast(v => v.title == "photobook64") || await chrome.bookmarks.create({ title: "photobook64" })).id;
       let nodes = await chrome.bookmarks.getChildren(parentId);
       let i = 0;
